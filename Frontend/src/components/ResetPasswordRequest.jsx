@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { requestResetPassword } from '../api/auth';
-import { handleSuccess, handleError } from '../../utils';
 import { ToastContainer } from 'react-toastify';
 
 const ResetPasswordRequest = () => {
@@ -25,7 +24,7 @@ const ResetPasswordRequest = () => {
         setError('');
       } else {
         setError(response.message);
-        handleError(response.message);
+      
         setMessage('');
       }
     } catch (err) {
