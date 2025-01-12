@@ -1,8 +1,9 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
+const { passwordUpdated } = require("../mail/passwordUpdate");
 require("dotenv").config();
-
+const mailSender = require("../utils/mailSender");
 exports.resetPasswordToken = async (req, res) => {
   try {
     //1. Extract email from req
@@ -13,7 +14,7 @@ exports.resetPasswordToken = async (req, res) => {
     if (!email || !emailRegex.test(email)) {
       return res.status(400).json({
         success: false,
-        message: "Invalid email format",
+        message: "Invalid Email Format",
       });
     }
     //2. Check user exists or not
@@ -22,43 +23,42 @@ exports.resetPasswordToken = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "Email is not registered.",
+        message: "Email is Not Registered",
       });
     }
     //4.Generate Token and hash it
-    const token = crypto.randomBytes(20).toString("hex");
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const resetPasswordToken = crypto.randomBytes(20).toString("hex");
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(resetPasswordToken)
+      .digest("hex");
     //5.Update User by adding token and expiration time
     const updatedDetails = await User.findOneAndUpdate(
       { email: email }, //find Details using email parameter
       {
         //update token and resetPasswordExpires to respective details
-        token: hashedToken,
-        resetPasswordExpires: Date.now() + 3600000,
+        resetPasswordToken: hashedToken,
+        resetPasswordExpires: Date.now() + 3 * 60 * 1000,
       },
       { new: true }
     );
     //6.Create url
     const BASE_URL = process.env.FRONTEND_URL || "http://localhost:5173";
-    const url = `${BASE_URL}/reset-password?token=${token}&email=${encodeURIComponent(
+    const url = `${BASE_URL}/reset-password?token=${resetPasswordToken}&email=${encodeURIComponent(
       email
     )}`;
+    //send mail containing url
+    await mailSender(email, "Password Reset", passwordUpdated(email, url));
 
-    const cookieOptions = {
-      expires: new Date(Date.now() + 3 * 60 * 1000), //3 minutes
-      httpOnly: true,
-    };
-    //7. Send status code 200
-    return res.cookie("urltoken", token, cookieOptions).status(200).json({
+    return res.status(200).json({
       success: true,
-      url,
-      message: "Please wait. Redirecting...",
+      message: "Check Your Mail for Resseting the password",
     });
   } catch (error) {
     console.error(`Error: ${error.message}`);
     return res.status(500).json({
       success: false,
-      message: "Some Error in Sending Reset Message.",
+      message: "An error occurred while processing the request",
     });
   }
 };
@@ -68,18 +68,18 @@ exports.resetPassword = async (req, res) => {
     //1.Fetch data from req.body
     const { password, confirmPassword, email } = req.body;
     if (password.length < 6) {
-      return res.json({
+      return res.status(400).json({
         success: false,
-        message: "At least 6 characters",
+        message: "Password must be at least 6 characters",
       });
     }
     if (confirmPassword !== password) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Password and Confirm Password Does not Match.",
       });
     }
-    const token = req?.cookies?.urltoken;
+    // const token = req?.cookies?.urltoken;
     // const tokenInUrl = req?.params?.token;
     const tokenInUrl = req?.query?.token;
     // console.log('reset password:',token,tokenInUrl);
@@ -90,23 +90,17 @@ exports.resetPassword = async (req, res) => {
         message: "url has invalid token",
       });
     }
-    if (!token) {
-      return res.json({
-        success: false,
-        message: "cookies have no token",
-      });
-    }
-    if (token !== tokenInUrl) {
-      return res.json({
-        success: false,
-        message: "Invalid token in url",
-      });
-    }
     //2.Validate data
 
     //3.Get userDetails from DB using hashedToken
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-    const userDetails = await User.findOne({ email, token: hashedToken });
+    const hashedToken = crypto
+      .createHash("sha256")
+      .update(tokenInUrl)
+      .digest("hex");
+    const userDetails = await User.findOne({
+      email,
+      resetPasswordToken: hashedToken,
+    });
     //4.Validate userDetails
     if (!userDetails) {
       return res.json({
@@ -125,8 +119,12 @@ exports.resetPassword = async (req, res) => {
     const encryptedPassword = await bcrypt.hash(password, 10);
     //7.Update the password
     await User.findOneAndUpdate(
-      { email, token: hashedToken },
-      { password: encryptedPassword, token: null, resetPasswordExpires: null },
+      { email, resetPasswordToken: hashedToken },
+      {
+        password: encryptedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpires: null,
+      },
       { new: true }
     );
     //8.Send status code 200

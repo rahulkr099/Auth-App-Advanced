@@ -183,7 +183,7 @@ exports.logout = async (req, res) => {
     //Respond with a success message
     return res.status(200).json({
       success: true,
-      message: "User logged out successfully",
+      message: "User Logged out successfully",
     });
   } catch (error) {
     console.error("Error during logout", error);
@@ -242,9 +242,6 @@ exports.refreshAccessToken = async (req, res) => {
     }
 
     const newAccessToken = generateAccessToken({
-      /*username:user.username,
-             firstName:user.firstName,
-             lastName:user.lastName */
       email: user.email,
       id: user._id,
       role: user.role,
@@ -270,10 +267,10 @@ exports.refreshAccessToken = async (req, res) => {
         message: "Access Token Refreshed",
       });
   } catch (error) {
-    console.error(`error in refreshtoken: ${error}`);
+    console.error(`Error in refreshing the token: ${error}`);
     return res.status(401).json({
       success: false,
-      message: "Invalid refresh token or server error",
+      message: "Invalid Refresh token or Server error",
     });
   }
 };

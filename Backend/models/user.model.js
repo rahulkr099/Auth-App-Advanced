@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -23,7 +24,9 @@ const userSchema = new mongoose.Schema({
     role:{
         type:String,
         enum:["admin","user"],
-        
+    },
+    resetPasswordToken:{
+        type:String,
     },
     accessToken: {
         type: String,
