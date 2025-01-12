@@ -8,6 +8,9 @@ import Navbar from './components/Navbar';
 import PropTypes from 'prop-types'
 import ResetPassword from './components/ResetPassword';
 import ResetPasswordRequest from './components/ResetPasswordRequest';
+import PageNotFound from './components/PageNotFound';
+import {GoogleOAuthProvider} from '@react-oauth/google';
+import GoogleLogin from './pages/GoogleLogin';
 
 // PrivateRoute Component
 const PrivateRoute = ({ element, isAuthenticated }) => {
@@ -17,14 +20,22 @@ const PrivateRoute = ({ element, isAuthenticated }) => {
 function App() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
   // console.log('app me isauth ka value',isAuthenticated);
+  const GoogleAuthWrapper = () =>{
+    return(
+      <GoogleOAuthProvider clientId='586582432388-f3jsa99pf0eh5h4ucljdnb31q2qrvub2.apps.googleusercontent.com'>
+        <GoogleLogin></GoogleLogin>
+      </GoogleOAuthProvider>
+    )
+  }
   return (
     <div>
+     
       {/* Navbar is available on every page */}
       <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
 
       {/* Ensures the authentication state is refreshed on page load */}
       <RefreshHandler setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} />
-
+      
       <Routes>
         {/* Redirect root path to login */}
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -34,13 +45,18 @@ function App() {
           path="/home"
           element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />}
         />
-
+        
         {/* Public routes for Login and Signup */}
-        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
+        <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} GoogleAuthWrapper={GoogleAuthWrapper} />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/reset-password-token" element={<ResetPasswordRequest />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path='*' element={<PageNotFound/>}/>
       </Routes>
+      
+      
+      
+     
     </div>
   );
 }

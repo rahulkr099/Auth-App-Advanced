@@ -3,9 +3,10 @@ import { ToastContainer } from "react-toastify";
 import { useState } from "react";
 import { handleError, handleSuccess } from "../../utils";
 import PropTypes from 'prop-types'
+import GoogleLogin from "./GoogleLogin";
 
 
-function Login({ setIsAuthenticated }) {
+function Login({ setIsAuthenticated, GoogleAuthWrapper }) {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false); // Loading state for better UX
   const navigate = useNavigate();
@@ -29,16 +30,16 @@ function Login({ setIsAuthenticated }) {
       const response = await fetch("http://localhost:4000/api/v1/login",
         {
           method: "POST",
-          headers: {  "Content-Type": "application/json",  },
+          headers: { "Content-Type": "application/json", },
           credentials: 'include', //Include cookies in the request
           body: JSON.stringify(loginInfo),
         }
       );
 
       const result = await response.json();
-      
+
       if (response.ok && result.success) {
-         const { accessToken, user } = result;
+        const { accessToken, user } = result;
         handleSuccess(result.message);
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("loggedInUser", user.email);
@@ -132,6 +133,11 @@ function Login({ setIsAuthenticated }) {
             >Forgot Password</Link>
           </span>
         </form>
+      <div className="text-center">
+      <GoogleAuthWrapper>
+        <GoogleLogin />
+      </GoogleAuthWrapper>
+      </div>
       </div>
       <ToastContainer />
     </div>
@@ -139,5 +145,6 @@ function Login({ setIsAuthenticated }) {
 }
 Login.propTypes = {
   setIsAuthenticated: PropTypes.func.isRequired,
+  GoogleAuthWrapper:PropTypes.func.isRequired,
 };
 export default Login;

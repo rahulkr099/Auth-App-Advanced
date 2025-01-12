@@ -20,34 +20,31 @@ const useAuth = () => {
         });
 
         const data = await response.json(); // Parse response as JSON
-        console.log('useAuth.jsx response:', data);
-        console.log('message:', data.message);
+        // console.log('Response from useAuth.jsx:', data);
+        // console.log('useAuth"s message:', data.message);
         if (response.ok && data.success) {
           // setIsAuthenticated(!!accessToken); // Set true if accessToken exists
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
-
         }
       } else {
         setIsAuthenticated(false);
       }
-
-
     }
-
     checkLoginStatus();
-        // Set up token refresh logic
-        const refreshInterval = setInterval(async () => {
-          const newAccessToken = await refreshToken();
-          if (!newAccessToken) {
-            setIsAuthenticated(false);
-            clearInterval(refreshInterval);
-          }
-        }, 4 * 60 * 1000); // Refresh token every 4 minutes
-    
-        return () => clearInterval(refreshInterval);
-      
+    // Set up token refresh logic
+    const refreshInterval = setInterval(async () => {
+      const newAccessToken = await refreshToken();
+      // console.log('Response in setInterval from refreshtoken:',newAccessToken);
+      if (!newAccessToken) {
+        setIsAuthenticated(false);
+        clearInterval(refreshInterval);
+      }
+    }, 4 * 60 * 1000); // Refresh token every 4 minutes
+
+    return () => clearInterval(refreshInterval);
+
   }, []);
 
   const logout = () => {
@@ -57,5 +54,4 @@ const useAuth = () => {
   };
   return { isAuthenticated, setIsAuthenticated, logout };
 };
-
 export default useAuth;

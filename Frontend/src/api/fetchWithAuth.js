@@ -13,10 +13,10 @@ const fetchWithAuth = async (url, options = {}) => {
     const response = await fetch(url, {  ...options,  headers,
       credentials: "include",});
 
-    const responseClone = response.clone();
-    const clonedData = await responseClone.json();
-    console.log("Response in fetchwithauth.js", clonedData, response.status);
-    console.log("message:", clonedData.message);
+    // const responseClone = response.clone();
+    // const clonedData = await responseClone.json();
+    // console.log("Response in fetchwithauth.js", clonedData, response.status);
+    // console.log("message:", clonedData.message);
 
     if (response.status === 401 && !options._retry) {
       console.log("Access token expired. Attempting to refresh token...");
