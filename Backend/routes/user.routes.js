@@ -9,6 +9,8 @@ const {validateRequest} = require("../middlewares/validation.middleware");
 const { auth } = require('../middlewares/auth.middleware');
 const {resetPasswordToken, resetPassword} = require("../controllers/resetPassword.controller");
 const { authStatus } = require('../controllers/authStatus.controller');
+const {googleLogin} = require("../controllers/googleLogin.controller");
+const { checkGoogleAccessToken } = require('../controllers/googleAuth');
 // **********************************************************
 //  Authentication routes
 // **********************************************************
@@ -35,5 +37,7 @@ router.post("/reset-password-token", resetPasswordToken)
 // Route for resetting user's password after verification
 router.post("/reset-password", resetPassword)
 router.post("/refresh-token",refreshAccessToken)
+router.get('/google/auth',googleLogin);
+router.get('/google/auth/status',checkGoogleAccessToken);
 
 module.exports = router;

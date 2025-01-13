@@ -11,19 +11,22 @@ import ResetPasswordRequest from './components/ResetPasswordRequest';
 import PageNotFound from './components/PageNotFound';
 import {GoogleOAuthProvider} from '@react-oauth/google';
 import GoogleLogin from './pages/GoogleLogin';
-
+import useGoogleAuth from './hooks/useGoogleAuth';
 // PrivateRoute Component
-const PrivateRoute = ({ element, isAuthenticated }) => {
-  return isAuthenticated ? element : <Navigate to="/login" replace={true} />;
+ // This combined guard checks both regular authentication and Google authentication
+ const PrivateRoute = ({ element, isAuthenticated, isGoogleAuth }) => {
+  return isAuthenticated || isGoogleAuth ? element : <Navigate to="/login" replace={true} />;
 };
 
 function App() {
   const { isAuthenticated, setIsAuthenticated } = useAuth();
+  const {isGoogleAuth , setIsGoogleAuth} = useGoogleAuth();
   // console.log('app me isauth ka value',isAuthenticated);
+
   const GoogleAuthWrapper = () =>{
     return(
       <GoogleOAuthProvider clientId='586582432388-f3jsa99pf0eh5h4ucljdnb31q2qrvub2.apps.googleusercontent.com'>
-        <GoogleLogin></GoogleLogin>
+        <GoogleLogin setIsGoogleAuth={setIsGoogleAuth}></GoogleLogin>
       </GoogleOAuthProvider>
     )
   }
@@ -31,10 +34,10 @@ function App() {
     <div>
      
       {/* Navbar is available on every page */}
-      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} />
+      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} isGoogleAuth={isGoogleAuth}/>
 
       {/* Ensures the authentication state is refreshed on page load */}
-      <RefreshHandler setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} />
+      <RefreshHandler setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} setIsGoogleAuth={setIsGoogleAuth} isGoogleAuth={isGoogleAuth}/>
       
       <Routes>
         {/* Redirect root path to login */}
@@ -43,7 +46,7 @@ function App() {
         {/* Protected route for authenticated users */}
         <Route
           path="/home"
-          element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} />}
+          element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} isGoogleAuth={isGoogleAuth}/>}
         />
         
         {/* Public routes for Login and Signup */}
@@ -54,9 +57,6 @@ function App() {
         <Route path='*' element={<PageNotFound/>}/>
       </Routes>
       
-      
-      
-     
     </div>
   );
 }
@@ -65,6 +65,7 @@ function App() {
 PrivateRoute.propTypes = {
   element: PropTypes.element.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  isGoogleAuth:PropTypes.bool,
 };
 
 export default App;

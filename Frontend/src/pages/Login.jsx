@@ -135,7 +135,7 @@ function Login({ setIsAuthenticated, GoogleAuthWrapper }) {
         </form>
       <div className="text-center">
       <GoogleAuthWrapper>
-        <GoogleLogin />
+        <GoogleLogin/>
       </GoogleAuthWrapper>
       </div>
       </div>
@@ -145,6 +145,6 @@ function Login({ setIsAuthenticated, GoogleAuthWrapper }) {
 }
 Login.propTypes = {
   setIsAuthenticated: PropTypes.func.isRequired,
-  GoogleAuthWrapper:PropTypes.func.isRequired,
+  GoogleAuthWrapper:PropTypes.func,
 };
 export default Login;

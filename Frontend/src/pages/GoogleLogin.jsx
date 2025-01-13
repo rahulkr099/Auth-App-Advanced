@@ -1,19 +1,37 @@
+// import {useState} from "react";
+import { useGoogleLogin } from "@react-oauth/google";
+import { googleAuth } from "../api/googleAuth";
+import PropTypes from 'prop-types'
 
-import {useGoogleLogin} from '@react-oauth/google'
-
-const GoogleLogin = () => {
-
-    const responseGoogle = async (authResult) =>{
-        try {
-            console.log('responsegoogle on success:',authResult)
-        } catch (error) {
-            console.error('responsegoogle on error:',error)
-        }
-    }
+const GoogleLogin = ({setIsGoogleAuth}) => {
+    // const [user, setUser] = useState(null);
+	
+    const responseGoogle = async (authResult) => {
+		try {
+			console.log('googleLogin ka authresult',authResult)
+			if (authResult["code"]) {
+				const result = await googleAuth(authResult.code);
+                console.log('result in googleLogin:',result)
+				const {email, firstName, lastName, role} = result.user;
+				const token = result.token;
+				const obj = {email,firstName,lastName, token, role};
+                console.log('obj of googleLogin:',obj);
+				localStorage.setItem('user-info',JSON.stringify(obj));
+				setIsGoogleAuth(true);
+				
+			} else {
+				console.log("error in googlelogin:",authResult);
+				setIsGoogleAuth(false);
+				throw new Error(authResult);
+			}
+		} catch (e) {
+			console.log('Error while Google Login...', e);
+		}
+	};
 
     const googleLogin = useGoogleLogin({
         onSuccess: responseGoogle,
-        onEror: responseGoogle,
+        onError: responseGoogle,
         flow: 'auth-code'
     })
   return (
@@ -22,5 +40,7 @@ const GoogleLogin = () => {
     </div>
   )
 }
-
+GoogleLogin.propTypes = {
+  setIsGoogleAuth:PropTypes.func,
+};
 export default GoogleLogin
