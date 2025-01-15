@@ -7,11 +7,11 @@ const { login, signup, logout, refreshAccessToken } = require("../controllers/us
 const {signupSchema, loginSchema} = require("../validations/user.validation");
 const {validateRequest} = require("../middlewares/validation.middleware");
 const { auth } = require('../middlewares/auth.middleware');
-const {resetPasswordToken, resetPassword} = require("../controllers/resetPassword.controller");
-const { authStatus } = require('../controllers/authStatus.controller');
-const {googleLogin} = require("../controllers/googleLogin.controller");
-const { checkGoogleAccessToken, authenticateGoogleRequest } = require('../controllers/googleAuth');
-const {revokeGoogleToken} = require('../controllers/revokeGoogleToken')
+const {resetPasswordToken, resetPassword} = require("../services/resetPassword.services");
+const { authStatus } = require('../services/authStatus.services');
+const {googleLogin} = require("../services/googleLogin.services");
+const { checkGoogleAccessToken, authenticateGoogleRequest } = require('../services/googleAuth.services');
+const {revokeGoogleToken} = require('../services/revokeGoogleToken.services')
 // **********************************************************
 //  Authentication routes
 // **********************************************************
