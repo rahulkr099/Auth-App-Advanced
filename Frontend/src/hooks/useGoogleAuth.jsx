@@ -1,11 +1,12 @@
 import {useEffect , useState} from 'react'
+import fetchWithGoogle from '../api/fetchWithGoogle'
 
 const useGoogleAuth = () => {
    const [isGoogleAuth, setIsGoogleAuth]  = useState(false)
 
     useEffect(() => {
         const checkGoogleAuth = async () => {
-          const googleRes = await fetch(`http://localhost:4000/api/v1/google/auth/status`, {
+          const googleRes = await fetchWithGoogle(`http://localhost:4000/api/v1/google/auth/status`, {
             method: 'GET',
             credentials: 'include',
             headers: {

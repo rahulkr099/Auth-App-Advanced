@@ -10,7 +10,8 @@ const { auth } = require('../middlewares/auth.middleware');
 const {resetPasswordToken, resetPassword} = require("../controllers/resetPassword.controller");
 const { authStatus } = require('../controllers/authStatus.controller');
 const {googleLogin} = require("../controllers/googleLogin.controller");
-const { checkGoogleAccessToken } = require('../controllers/googleAuth');
+const { checkGoogleAccessToken, authenticateGoogleRequest } = require('../controllers/googleAuth');
+const {revokeGoogleToken} = require('../controllers/revokeGoogleToken')
 // **********************************************************
 //  Authentication routes
 // **********************************************************
@@ -39,5 +40,7 @@ router.post("/reset-password", resetPassword)
 router.post("/refresh-token",refreshAccessToken)
 router.get('/google/auth',googleLogin);
 router.get('/google/auth/status',checkGoogleAccessToken);
+router.get('/google/auth/refresh',authenticateGoogleRequest);
+router.post('/google/auth/revoke',revokeGoogleToken);
 
 module.exports = router;

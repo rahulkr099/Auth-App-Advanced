@@ -7,18 +7,16 @@ const useAuth = () => {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-
-
       const accessToken = localStorage.getItem('accessToken');
-      console.log('accessToken in localstorage in useAuth.jsx',accessToken)
-      if (accessToken) {
+      console.log('accessToken in localstorage in useAuth.jsx', accessToken)
+      // if (accessToken) {
         const response = await fetchWithAuth(`http://localhost:4000/api/v1/auth/status`, {
           method: 'POST',
           credentials: 'include', // To include cookies if needed
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ accessToken }), // Send the token as a JSON object
+          // body: JSON.stringify({ accessToken }), // Send the token as a JSON object
         });
 
         const data = await response.json(); // Parse response as JSON
@@ -30,15 +28,15 @@ const useAuth = () => {
         } else {
           setIsAuthenticated(false);
         }
-      } else {
-        setIsAuthenticated(false);
-      }
+      // } else {
+      //   setIsAuthenticated(false);
+      // }
     }
     checkLoginStatus();
     // Set up token refresh logic
     const refreshInterval = setInterval(async () => {
       const newAccessToken = await refreshToken();
-      console.log('Response in setInterval from refreshtoken:',newAccessToken);
+      console.log('Response in setInterval from refreshtoken:', newAccessToken);
       if (!newAccessToken) {
         setIsAuthenticated(false);
         clearInterval(refreshInterval);
@@ -48,13 +46,7 @@ const useAuth = () => {
     return () => clearInterval(refreshInterval);
 
   }, []);
-
-  const logout = () => {
-    localStorage.removeItem('accessToken'); // Clear the token
-    setIsAuthenticated(false);
-    window.location.href = '/login'; // Redirect to login
-  };
-  return { isAuthenticated, setIsAuthenticated, logout };
+  return { isAuthenticated, setIsAuthenticated};
 };
 
 export default useAuth;

@@ -6,20 +6,31 @@ import Overlays from '../components/Overlays'
 import {useSetAtom} from 'jotai'
 import {uiAtom} from '../../state'
 
-function Home() {
+function Home({isGoogleAuth, isAuthenticated}) {
   const setUi = useSetAtom(uiAtom);
   const [loggedInUser, setLoggedInUser] = useState("");
   
   
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"));
+    if(isAuthenticated){
+      const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       setLoggedInUser(user.firstName || "Guest");
       handleSuccess(`Welcome, ${user.firstName || "Guest"}!`);
     } else {
       handleError("User not logged in!");
     }
-  }, []);
+    }
+    if(isGoogleAuth){
+      const user = JSON.parse(localStorage.getItem("user-info"));
+      if (user) {
+        setLoggedInUser(user.firstName || "Guest");
+        handleSuccess(`Welcome, ${user.firstName || "Guest"}!`);
+      } else {
+        handleError("User not logged in!");
+      }
+    }
+  }, [isAuthenticated,isGoogleAuth]);
 
   return (
     <>

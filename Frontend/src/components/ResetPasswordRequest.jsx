@@ -28,7 +28,7 @@ const ResetPasswordRequest = () => {
         setMessage('');
       }
     } catch (err) {
-      handleError(`An error occurred. Please try again. ${err}`);
+      setError(`An error occurred. Please try again. ${err}`);
     }
   };
 

@@ -7,10 +7,10 @@ const refreshToken = async () => {
       credentials: "include",
     });
 
-    // const responseClone = response.clone();
-    // const clonedData = await responseClone.json();
-    // console.log("Response from frontend refreshToken.js: ", clonedData);
-    // console.log("refreshToken's message:", clonedData.message);
+    const responseClone = response.clone();
+    const clonedData = await responseClone.json();
+    console.log("Response from frontend refreshToken.js: ", clonedData);
+    console.log("refreshToken's message:", clonedData.message);
 
     if (!response.ok) {
       console.error("Failed to get Refresh Token:", response);

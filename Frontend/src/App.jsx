@@ -34,7 +34,7 @@ function App() {
     <div>
      
       {/* Navbar is available on every page */}
-      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} isGoogleAuth={isGoogleAuth}/>
+      <Navbar isAuthenticated={isAuthenticated} setIsAuthenticated={setIsAuthenticated} isGoogleAuth={isGoogleAuth} setIsGoogleAuth={setIsGoogleAuth}/>
 
       {/* Ensures the authentication state is refreshed on page load */}
       <RefreshHandler setIsAuthenticated={setIsAuthenticated} isAuthenticated={isAuthenticated} setIsGoogleAuth={setIsGoogleAuth} isGoogleAuth={isGoogleAuth}/>
@@ -46,7 +46,7 @@ function App() {
         {/* Protected route for authenticated users */}
         <Route
           path="/home"
-          element={<PrivateRoute element={<Home />} isAuthenticated={isAuthenticated} isGoogleAuth={isGoogleAuth}/>}
+          element={<PrivateRoute element={<Home isAuthenticated={isAuthenticated} isGoogleAuth={isGoogleAuth}/>} isAuthenticated={isAuthenticated} isGoogleAuth={isGoogleAuth}/>}
         />
         
         {/* Public routes for Login and Signup */}
