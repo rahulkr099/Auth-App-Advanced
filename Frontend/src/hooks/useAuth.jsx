@@ -7,9 +7,8 @@ const useAuth = () => {
 
   useEffect(() => {
     const checkLoginStatus = async () => {
-      const accessToken = localStorage.getItem('accessToken');
-      console.log('accessToken in localstorage in useAuth.jsx', accessToken)
-      // if (accessToken) {
+       localStorage.getItem('accessToken');
+      
         const response = await fetchWithAuth(`http://localhost:4000/api/v1/auth/status`, {
           method: 'POST',
           credentials: 'include', // To include cookies if needed
@@ -17,26 +16,23 @@ const useAuth = () => {
             'Content-Type': 'application/json',
           },
           // body: JSON.stringify({ accessToken }), // Send the token as a JSON object
-        });
+        },"notgoogle");
 
         const data = await response.json(); // Parse response as JSON
-        console.log('Response from useAuth.jsx:', data);
-        console.log('useAuth"s message:', data.message);
+        // console.log('Response from useAuth.jsx:', data);
+        // console.log('useAuth"s message:', data.message);
         if (response.ok && data.success) {
           // setIsAuthenticated(!!accessToken); // Set true if accessToken exists
           setIsAuthenticated(true);
         } else {
           setIsAuthenticated(false);
         }
-      // } else {
-      //   setIsAuthenticated(false);
-      // }
     }
     checkLoginStatus();
     // Set up token refresh logic
     const refreshInterval = setInterval(async () => {
       const newAccessToken = await refreshToken();
-      console.log('Response in setInterval from refreshtoken:', newAccessToken);
+      // console.log('Response in setInterval from refreshtoken:', newAccessToken);
       if (!newAccessToken) {
         setIsAuthenticated(false);
         clearInterval(refreshInterval);

@@ -1,36 +1,37 @@
-const refreshToken = async () => {
+// refreshToken.js
+
+const refreshToken = async (type) => {
   const BASE_URL = "http://localhost:4000/api/v1";
+  const endpoint = type === "google" ? "/google/auth/refresh" : "/refresh-token";
 
   try {
-    const response = await fetch(`${BASE_URL}/refresh-token`, {
-      method: "POST",
+    const response = await fetch(`${BASE_URL}${endpoint}`, {
+      method: type === "google" ? "GET" : "POST",
       credentials: "include",
     });
 
     const responseClone = response.clone();
     const clonedData = await responseClone.json();
-    console.log("Response from frontend refreshToken.js: ", clonedData);
-    console.log("refreshToken's message:", clonedData.message);
+    // console.log(`Response from refreshToken (${type}):`, clonedData);
+    // console.log("refreshToken's message:", clonedData.message);
 
     if (!response.ok) {
       console.error("Failed to get Refresh Token:", response);
       throw new Error("Token Refreshing Failed");
     }
-    if (response.ok) {
-      const { accessToken } = await response.json();
-      if (accessToken) {
-        localStorage.setItem("accessToken", accessToken); // Store token only if response is successful
-        return accessToken;
-      } else {
-        console.error("No access token in response payload.");
-        return null;
-      }
+
+    const tokenKey = type === "google" ? "googleAccessToken" : "accessToken";
+    const token = clonedData[tokenKey];
+
+    if (token) {
+      localStorage.setItem(tokenKey, token);
+      return token;
     } else {
-      console.error(`Token Refreshing Failed: ${response.status} ${response.statusText}`);
+      console.error("No access token in response payload.");
       return null;
     }
   } catch (error) {
-    console.error("Error during refreshing token:", error);
+    console.error(`Error during refreshing token (${type}):`, error);
     return null; // Return null if refresh fails
   }
 };

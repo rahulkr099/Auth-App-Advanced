@@ -6,25 +6,19 @@ const ResetPasswordRequest = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await requestResetPassword(email);
-      console.log('response in reset token',response);
+      // console.log('response in reset token',response);
       if (response.success) {
         setMessage(response.message);
-        // handleSuccess(response.message);
-        // setTimeout(()=>{
-        //   if(response.url) {
-        //     window.location.assign(response.url);
-        //   }
-        // },3000)
         setError('');
       } else {
         setError(response.message);
-      
         setMessage('');
       }
     } catch (err) {
@@ -35,8 +29,8 @@ const ResetPasswordRequest = () => {
   return (
     <div className="container mx-auto p-4 bg-slate-400">
       <h1 className="text-2xl font-bold mb-4">Reset Password</h1>
-       {message && <p className="text-green-600">{message}</p>} 
-       {error && <p className="text-red-600">{error}</p>} 
+       {message && <p className="text-green-500 text-3xl">{message}</p>} 
+       {error && <p className="text-red-500 text-3xl">{error}</p>} 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <label className="block font-semibold" htmlFor='email'>Email:</label>
@@ -54,7 +48,7 @@ const ResetPasswordRequest = () => {
           type="submit"
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
         >
-          Send Reset Link
+          {loading? 'Please Wait...':'Send Reset Link'}
         </button>
       </form>
       <ToastContainer/>

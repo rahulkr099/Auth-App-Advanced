@@ -8,60 +8,38 @@ const Navbar = ({ isAuthenticated, setIsAuthenticated, isGoogleAuth ,setIsGoogle
 
   const handleLogout = async () => {
     try {
-      let url; let response;let result;
-      if (isGoogleAuth || isAuthenticated) {
-        if (isGoogleAuth) {
-          url = "http://localhost:4000/api/v1/google/auth/revoke"
-          response = await fetch(url,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: 'include', //Include cookies in the request
-            });
-            result = await response.json();
-            console.log("logout", result);
-           
-            if(response.ok && result.success){
-              
-              setTimeout(() => {
-                setIsGoogleAuth(false);
-                localStorage.removeItem('user-info');
-                localStorage.removeItem('googleAccessToken');
-                navigate('/login');
-              }, 1000);
-            }
-        } else if (isAuthenticated) {
-          url = "http://localhost:4000/api/v1/logout"
-          response = await fetch(url,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              credentials: 'include', //Include cookies in the request
-            });
-          result = await response.json();
-          console.log("logout", result);
-          if (response.ok && result.success) {
-            // console.log('response.ok and result.success:',response.ok,result.success)
-            setTimeout(() => {
-              setIsAuthenticated(false);
-              ['loggedInUser', 'accessToken', 'refreshToken'].forEach((key) => localStorage.removeItem(key));
-              navigate('/login');
-            }, 1000);
-          } 
-        }
+      if (!isGoogleAuth && !isAuthenticated) return;
+
+      const url = isGoogleAuth
+        ? "http://localhost:4000/api/v1/google/auth/revoke"
+        : "http://localhost:4000/api/v1/logout";
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: 'include',
+      });
+
+      const result = await response.json();
+      // console.log("logout", result);
+
+      if (response.ok && result.success) {
+        setTimeout(() => {
+          if (isGoogleAuth) {
+            setIsGoogleAuth(false);
+            localStorage.removeItem('googleAccessToken');
+            localStorage.removeItem('user-info');
+          } else {
+            setIsAuthenticated(false);
+            ['loggedInUser', 'accessToken', 'refreshToken'].forEach((key) => localStorage.removeItem(key));
+          }
+          navigate('/login');
+        }, 1000);
       }
     } catch (error) {
-      console.error('Error while logout',error)
-      throw new Error;
-    }}
-    // handleError(result.message);
-
-    // console.log('useauth check kro')
-
+      console.error('Error while logging out', error);
+    }
+  };
     return (
       <nav className='text-xl bg-blue-500 drop-shadow-xl backdrop-filter backdrop-blur-xl bg-opacity-90 '>
         <ul className='flex justify-around gap-3 p-1 '>

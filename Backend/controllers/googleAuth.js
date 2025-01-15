@@ -10,7 +10,7 @@ exports.checkGoogleAccessToken = async (req, res) => {
     if (!accessToken) {
       return res.status(401).json({
         success: false,
-        message: "Access Token is invalid or expired",
+        message: "Access Token is missing or expired",
       });
     }
     // await authenticateGoogleRequest(User);
