@@ -1,6 +1,5 @@
 //Importing required modules
 const jwt = require("jsonwebtoken");
-const { extractToken } = require("../utils/extractToken");
 require("dotenv").config();
 
 exports.auth = (req, res, next) => {
